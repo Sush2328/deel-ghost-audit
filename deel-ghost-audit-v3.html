@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ghost Audit: Deel — Bhavani Susmitha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0c0e;--bg2:#101013;--bg3:#141417;--bg4:#18181c;
+  --border:rgba(255,255,255,0.07);--bb:rgba(255,255,255,0.12);
+  --text:#e6e4de;--m:#65635e;--m2:#96948e;
+  --r:#e8472a;--a:#f0a030;--b:#4a9eff;--g:#45a876;
+  --mono:'IBM Plex Mono',monospace;--sans:'DM Sans',sans-serif;--disp:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.65;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:52px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(12,12,14,0.94);backdrop-filter:blur(20px)}
+.nlogo{font-family:var(--mono);font-size:11px;color:var(--m);letter-spacing:.1em;text-transform:uppercase}
+.nlogo b{color:var(--r);font-weight:400}
+.nlinks{display:flex;list-style:none}
+.nlinks a{font-family:var(--mono);font-size:10px;color:var(--m);text-decoration:none;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-left:1px solid var(--border);display:block;transition:color .15s,background .15s}
+.nlinks a:hover{color:var(--text);background:var(--bg3)}
+.nlinks li:last-child a{border-right:1px solid var(--border)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:100px 48px 80px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:25%;right:-8%;width:480px;height:480px;background:radial-gradient(circle,rgba(232,71,42,.06) 0%,transparent 68%);pointer-events:none}
+.eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:32px;flex-wrap:wrap;opacity:0;animation:up .6s ease forwards .1s}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--bb);color:var(--m2)}
+.chip.live{border-color:var(--r);color:var(--r);display:flex;align-items:center;gap:6px}
+.chip.live::before{content:'';width:5px;height:5px;background:var(--r);border-radius:50%;animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hero-h1{font-family:var(--disp);font-size:clamp(56px,8vw,108px);font-weight:800;line-height:.9;letter-spacing:-.03em;opacity:0;animation:up .6s ease forwards .2s}
+.hero-h1 .red{color:var(--r)}
+.hero-sub{margin-top:28px;font-size:16px;color:var(--m2);font-weight:300;max-width:540px;line-height:1.7;opacity:0;animation:up .6s ease forwards .3s}
+.hero-sub strong{color:var(--text);font-weight:500}
+
+/* INDEX CARDS */
+.index{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:52px;opacity:0;animation:up .6s ease forwards .44s}
+.icard{background:var(--bg2);padding:24px;text-decoration:none;display:block;transition:background .15s}
+.icard:hover{background:var(--bg3)}
+.inum{font-family:var(--mono);font-size:10px;color:var(--m);letter-spacing:.1em;margin-bottom:10px}
+.ititle{font-family:var(--disp);font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.01em;line-height:1.2;margin-bottom:8px}
+.idesc{font-size:12px;color:var(--m2);line-height:1.5}
+.itag{display:inline-block;margin-top:14px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border:1px solid}
+.itag.r{border-color:var(--r);color:var(--r)}
+.itag.a{border-color:var(--a);color:var(--a)}
+.itag.b{border-color:var(--b);color:var(--b)}
+
+/* SECTIONS */
+section{padding:76px 48px;border-top:1px solid var(--border)}
+.slabel{font-family:var(--mono);font-size:10px;color:var(--m);letter-spacing:.12em;text-transform:uppercase;margin-bottom:36px;display:flex;align-items:center;gap:12px}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border);max-width:140px}
+
+/* GHOST TOP */
+.ghost-section{border-top:1px solid var(--border);position:relative}
+.abar{position:absolute;top:0;left:0;right:0;height:1px;opacity:.45}
+.abar.r{background:linear-gradient(90deg,transparent,var(--r),transparent)}
+.abar.a{background:linear-gradient(90deg,transparent,var(--a),transparent)}
+.abar.b{background:linear-gradient(90deg,transparent,var(--b),transparent)}
+.gtop{display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:start;margin-bottom:44px}
+.gnum{font-family:var(--disp);font-size:88px;font-weight:800;line-height:.85;letter-spacing:-.04em;user-select:none}
+.gnum.r{color:rgba(232,71,42,.16)}.gnum.a{color:rgba(240,160,48,.14)}.gnum.b{color:rgba(74,158,255,.13)}
+.gcat{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.gcat.r{color:var(--r)}.gcat.a{color:var(--a)}.gcat.b{color:var(--b)}
+.gh2{font-family:var(--disp);font-size:clamp(24px,3.2vw,42px);font-weight:700;letter-spacing:-.02em;line-height:1.05;color:var(--text);margin-bottom:10px}
+.gtag{font-size:14px;color:var(--m2);max-width:480px;line-height:1.6;font-weight:300}
+.badges{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border:1px solid}
+.badge.r{border-color:rgba(232,71,42,.35);color:var(--r)}
+.badge.a{border-color:rgba(240,160,48,.35);color:var(--a)}
+.badge.b{border-color:rgba(74,158,255,.35);color:var(--b)}
+
+/* BLOCKS */
+.blocks{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:1px}
+.blocks.one{grid-template-columns:1fr}
+.blocks.three{grid-template-columns:1fr 1fr 1fr}
+.blk{background:var(--bg2);padding:26px 30px}
+.blk.dk{background:var(--bg3)}
+.blk.dkr{background:var(--bg4)}
+.bh{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--m);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.bh.r{color:var(--r);border-color:rgba(232,71,42,.18)}
+.bh.a{color:var(--a);border-color:rgba(240,160,48,.18)}
+.bh.b{color:var(--b);border-color:rgba(74,158,255,.18)}
+.bh.warn{color:#c97a2a;border-color:rgba(201,122,42,.18)}
+
+/* BULLETS */
+.bl{list-style:none;display:flex;flex-direction:column;gap:9px}
+.bl li{display:flex;gap:11px;align-items:flex-start;font-size:13px;color:var(--m2);line-height:1.6;font-weight:300}
+.bl li::before{content:'•';flex-shrink:0;margin-top:1px;font-size:15px;line-height:1.4;color:var(--m)}
+.bl li strong{color:var(--text);font-weight:500}
+.bl.r li::before{color:var(--r)}.bl.a li::before{color:var(--a)}.bl.b li::before{color:var(--b)}
+
+/* QUOTE */
+.qt{padding:12px 16px;margin:12px 0;font-family:var(--mono);font-size:11px;line-height:1.65;font-style:italic}
+.qt.r{border-left:2px solid var(--r);background:rgba(232,71,42,.05);color:var(--m2)}
+.qt.a{border-left:2px solid var(--a);background:rgba(240,160,48,.05);color:var(--m2)}
+.qt.b{border-left:2px solid var(--b);background:rgba(74,158,255,.05);color:var(--m2)}
+.qsrc{display:block;margin-top:6px;font-size:9px;color:var(--m);letter-spacing:.06em;text-transform:uppercase;font-style:normal}
+
+/* STEPS */
+.steps{list-style:none;display:flex;flex-direction:column}
+.step{display:grid;grid-template-columns:32px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);align-items:start}
+.step:last-child{border-bottom:none;padding-bottom:0}
+.step:first-child{padding-top:0}
+.sn{font-family:var(--mono);font-size:10px;color:var(--m);padding-top:2px;letter-spacing:.06em}
+.st{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.sb{font-size:12.5px;color:var(--m2);line-height:1.6;font-weight:300}
+
+/* ROADMAP */
+.rm{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:18px}
+.rms{padding:16px 18px;background:var(--bg3)}
+.rml{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--m);margin-bottom:7px}
+.rml.r{color:var(--r)}.rml.a{color:var(--a)}.rml.b{color:var(--b)}
+.rmt{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.rmd{font-size:11px;color:var(--m2);line-height:1.5}
+
+/* FRICTION BLOCK */
+.friction{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:1px}
+.fitem{padding:20px 22px;background:var(--bg4)}
+.fl{font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#c97a2a;margin-bottom:8px}
+.ft{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.fb{font-size:11.5px;color:var(--m2);line-height:1.55;font-weight:300}
+
+/* OTHER GHOSTS */
+.og-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.og-item{background:var(--bg2);padding:22px 26px}
+.og-num{font-family:var(--mono);font-size:9px;color:var(--m);letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase}
+.og-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px;font-family:var(--disp);letter-spacing:-.01em}
+.og-body{font-size:12.5px;color:var(--m2);line-height:1.6;font-weight:300}
+
+/* WHY LAYOUT */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.why-head{font-family:var(--disp);font-size:clamp(20px,2.4vw,27px);font-weight:700;letter-spacing:-.02em;line-height:1.2;color:var(--text);margin-bottom:18px}
+.why-body{font-size:14px;color:var(--m2);line-height:1.75;font-weight:300}
+.why-body strong{color:var(--text);font-weight:500}
+.why-body p{margin-bottom:12px}
+.why-body p:last-child{margin-bottom:0}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.about-text{font-size:14px;color:var(--m2);line-height:1.8;font-weight:300}
+.about-text p{margin-bottom:14px}.about-text p:last-child{margin-bottom:0}
+.about-text strong{color:var(--text);font-weight:500}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:1px}
+.met{background:var(--bg2);padding:18px 22px}
+.mv{font-family:var(--disp);font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
+.ml{font-family:var(--mono);font-size:10px;color:var(--m);letter-spacing:.07em;text-transform:uppercase;line-height:1.4}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px}
+.drow:last-child{border-bottom:none}
+.dk2{color:var(--m)}.dv{color:var(--text)}
+.dv.r{color:var(--r)}.dv.a{color:var(--a)}.dv.b{color:var(--b)}.dv.g{color:var(--g)}
+
+/* FOOTER */
+footer{padding:28px 48px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.fn{font-family:var(--disp);font-size:16px;font-weight:700;color:var(--text)}
+.fl2{display:flex;gap:18px}
+.fl2 a{font-family:var(--mono);font-size:10px;color:var(--m);text-decoration:none;letter-spacing:.07em;text-transform:uppercase;transition:color .15s}
+.fl2 a:hover{color:var(--text)}
+.ff{width:100%;font-family:var(--mono);font-size:10px;color:var(--m);padding-top:14px;border-top:1px solid var(--border);letter-spacing:.04em}
+
+/* ANIM */
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* CAVEAT BOX */
+.caveat{border:1px solid rgba(240,160,48,.25);background:rgba(240,160,48,.04);padding:14px 18px;margin-top:14px}
+.caveat-label{font-family:var(--mono);font-size:9px;color:var(--a);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.caveat-body{font-size:12.5px;color:var(--m2);line-height:1.6;font-weight:300}
+.caveat-body strong{color:var(--text);font-weight:500}
+
+@media(max-width:860px){
+  nav{padding:0 20px}.nlinks{display:none}
+  .hero,section{padding-left:20px;padding-right:20px}
+  .hero{padding-top:88px}section{padding-top:52px;padding-bottom:52px}
+  .index,.og-grid{grid-template-columns:1fr}
+  .gtop{grid-template-columns:1fr;gap:14px}.gnum{font-size:60px}
+  .blocks,.blocks.three,.friction,.metrics{grid-template-columns:1fr}
+  .rm{grid-template-columns:1fr 1fr}
+  .why-grid,.about-grid{grid-template-columns:1fr}
+  footer{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nlogo"><b>GHOST AUDIT</b> // DEEL</div>
+  <ul class="nlinks">
+    <li><a href="#why">Why</a></li>
+    <li><a href="#g1">Ghost 01</a></li>
+    <li><a href="#g2">Ghost 02</a></li>
+    <li><a href="#g3">Ghost 03</a></li>
+    <li><a href="#others">Others</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow">
+    <span class="chip live">Live audit</span>
+    <span class="chip">May 2026</span>
+    <span class="chip">Public data only</span>
+    <span class="chip">No brief. No invitation.</span>
+  </div>
+  <h1 class="hero-h1">I found<br><span class="red">3 ghosts</span><br>in Deel.</h1>
+  <p class="hero-sub">A $1B+ ARR machine running decisions made at a different scale.<br><strong>Three verified problems. Evidence from public record. Real fixes, including where they break.</strong></p>
+
+  <div class="index">
+    <a class="icard" href="#g1">
+      <div class="inum">01 // Customer Operations</div>
+      <div class="ititle">Support works. Until it really matters.</div>
+      <div class="idesc">Simple queries: fast. Complex EOR and payroll failures: a structured void. Nobody has formally built the bridge between them.</div>
+      <span class="itag r">Trust Risk</span>
+    </a>
+    <a class="icard" href="#g2">
+      <div class="inum">02 // Brand and Acquisition</div>
+      <div class="ititle">Rippling owns "deel reviews" on Google</div>
+      <div class="idesc">A competitor buys Deel's brand keyword. Runs ads making claims Deel's own docs contradict. Deel is not running the same play back.</div>
+      <span class="itag a">Revenue Risk</span>
+    </a>
+    <a class="icard" href="#g3">
+      <div class="inum">03 // AI and Operations</div>
+      <div class="ititle">The AI bot optimised for the wrong metric</div>
+      <div class="idesc">Deel built an AI support agent and measured it on absorption rate. That metric rewards deflection, not resolution. The hard cases still fall through.</div>
+      <span class="itag b">Ops Risk</span>
+    </a>
+  </div>
+</div>
+
+<!-- WHY -->
+<section id="why">
+  <div class="slabel reveal">00 // Why this exists</div>
+  <div class="why-grid reveal">
+    <div>
+      <div class="why-head">I wanted the Ghostbuster role. So I operated like one.</div>
+      <div class="why-body">
+        <p>I applied, got rejected, and kept going. Reached out across three weeks to multiple people at Deel. Eventually Sumanth Krishna asked to see my CV. While I was waiting, I did what the job description says: I went looking for broken things.</p>
+        <p>Everything below came from <strong>public data only</strong>: Trustpilot, G2, Capterra, Gartner Peer Insights, Product Hunt, Deel's own blog posts, and third-party analyst write-ups from 2025 to 2026. No insider access. Every claim is sourced and verifiable.</p>
+        <p>This took a few dedicated hours and incomplete public data. It is a starting point, not a conclusion.</p>
+      </div>
+    </div>
+    <div class="blocks one">
+      <div class="blk dk">
+        <div class="bh">Sources</div>
+        <ul class="bl" style="margin-bottom:16px">
+          <li>Trustpilot, G2, Capterra, Gartner Peer Insights, Product Hunt (2025 to 2026)</li>
+          <li>Deel's own blog: AI support agent launch post, September 2025</li>
+          <li>Google search: "deel reviews," "rippling vs deel" — verified live, May 2026</li>
+          <li>Rippling's comparison page targeting Deel, verified May 2026</li>
+          <li>Independent analysts: eorHQ, Remotexa, Alcor, Gloroots (2025 to 2026)</li>
+        </ul>
+        <div class="caveat">
+          <div class="caveat-label">One honest caveat</div>
+          <div class="caveat-body">I am working from public signals, not internal data. The root causes could be partially wrong. What I am confident about: <strong>all three symptoms are real, documented, and sitting in Deel's public record.</strong> Someone should be hunting them.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GHOST 01 -->
+<section id="g1" class="ghost-section">
+  <div class="abar r"></div>
+  <div class="slabel reveal">01 // Customer Operations</div>
+
+  <div class="gtop reveal">
+    <div class="gnum r">01</div>
+    <div>
+      <div class="gcat r">Ghost 01</div>
+      <h2 class="gh2">Support works.<br>Until it really matters.</h2>
+      <p class="gtag">Simple queries get fast, human, resolved. Complex EOR and payroll failures enter the same queue and fall through. No formal triage exists between them.</p>
+      <div class="badges">
+        <span class="badge r">Trust Risk</span>
+        <span class="badge r">Churn Driver</span>
+        <span class="badge r">Scale Problem</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="blocks reveal">
+    <div class="blk">
+      <div class="bh r">What I found</div>
+      <ul class="bl r">
+        <li>Simple query reviews (payment status, withdrawal, contract questions): fast, positive, human responses across Trustpilot and G2.</li>
+        <li>Complex issue reviews tell a different story entirely. <strong>Gartner Peer Insights, verified 2025:</strong> "Support response over 24 hours. Even after reaching a human, they cannot answer my specific questions and I get referred to a specialist who takes days."</li>
+        <li><strong>Product Hunt, verified:</strong> "When you have questions about errors, you cannot call anyone. Everything is guided through AI, which is actually just a Google search. Email tickets take 3 days to a month."</li>
+        <li>One verified account: 3 of 4 payrolls processed incorrectly. Employees paid by manual checks. Support took a month to respond. The mistake was on Deel's end. Deel still withheld payment until the incorrect invoice was paid.</li>
+      </ul>
+      <div class="qt r">
+        "Their AI support bot can be incredibly circular; if you have a specific issue with a local bank delay, getting a real person to look at your actual transaction instead of quoting a help article can take way too long."
+        <span class="qsrc">Capterra verified review, February 2026</span>
+      </div>
+    </div>
+    <div class="blk">
+      <div class="bh r">Why it is a real problem</div>
+      <ul class="bl r">
+        <li>Deel's support model was built when most issues were simple contractor payment queries. That is still most of the volume. But EOR and payroll complexity has grown with the customer base.</li>
+        <li><strong>A missed payroll affecting 50 employees enters the same queue as a question about withdrawal fees.</strong> The response time is effectively identical. The stakes are not.</li>
+        <li>The cost of a missed payroll is not inconvenience. It is legal liability, employee trust, and in some markets, regulatory exposure. The support model does not reflect that asymmetry.</li>
+        <li>Overall CSAT remains high because simple queries dominate volume. The failure cases are statistically invisible in aggregate metrics. Nobody is measuring the right thing.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="blocks reveal">
+    <div class="blk dk">
+      <div class="bh r">Why it probably has not been fixed</div>
+      <ul class="bl">
+        <li>The ghost lives in a metric gap. High aggregate CSAT masks the problem. Complex failure cases are too infrequent to show up as a top-line issue without segment-level tracking.</li>
+        <li>Fixing it requires someone to own both the support classification and the downstream churn signal. That cross-functional mandate rarely happens without an explicit owner with the authority to enforce it.</li>
+        <li>There is a cost argument that has probably kept the status quo alive: routing complex cases to dedicated specialists is expensive, and the cases are not frequent enough to appear urgent.</li>
+      </ul>
+      <div class="caveat" style="margin-top:16px">
+        <div class="caveat-label">Where I might be wrong</div>
+        <div class="caveat-body">Deel may already have a tiered support system internally that is not visible from public reviews. The reviews I found could represent edge cases rather than systemic failure. If Deel's internal CSAT by issue type is strong, this ghost does not exist.</div>
+      </div>
+    </div>
+    <div class="blk dk">
+      <div class="bh r">Diagnosis: How I would find the real root cause</div>
+      <ol class="steps">
+        <li class="step"><span class="sn">01</span><div><div class="st">Segment tickets by issue type</div><div class="sb">Pull 6 months of support tickets. Categorise: simple contractor, payroll correction, EOR compliance, billing dispute. Measure resolution time and CSAT by category separately, not in aggregate.</div></div></li>
+        <li class="step"><span class="sn">02</span><div><div class="st">Map the escalation path</div><div class="sb">For complex EOR and payroll issues specifically: map first contact to resolution. How many handoffs? How many days? At which step does the case go cold?</div></div></li>
+        <li class="step"><span class="sn">03</span><div><div class="st">Correlate failures with churn</div><div class="sb">Do customers who experienced a complex support failure churn at a higher rate? If yes, the cost is quantifiable and the fix becomes a retention investment with a number attached.</div></div></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="blocks one reveal">
+    <div class="blk dkr">
+      <div class="bh r">The fix</div>
+      <div class="rm">
+        <div class="rms"><div class="rml r">Week 1 to 2</div><div class="rmt">Hard classifier at intake</div><div class="rmd">Before the bot attempts anything, classify the issue into 3 buckets: simple (bot handles), complex operational (4hr human SLA), urgent/high-stakes (skip queue, named human in 2hrs). Decision tree on keywords and account tier. Not a product rebuild. A routing layer.</div></div>
+        <div class="rms"><div class="rml r">Week 3 to 4</div><div class="rmt">Change the metric</div><div class="rmd">Replace "tickets closed" with "issue resolved without escalation within 24hrs." One data change. Instantly reorients what the entire support function optimises for.</div></div>
+        <div class="rms"><div class="rml r">Week 5 to 6</div><div class="rmt">Fix public response pattern</div><div class="rmd">Stop sending the same booking link to every negative review. Five complaint categories, five specific response structures. The reviewer should feel someone read what they wrote.</div></div>
+        <div class="rms"><div class="rml r">Day 60</div><div class="rmt">Measure separately by tier</div><div class="rmd">Aggregate NPS will not show the problem. Tier-level CSAT and resolution time will. Track independently and give the fix a number it can survive the next planning cycle with.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="friction reveal">
+    <div class="fitem">
+      <div class="fl">Implementation friction 01</div>
+      <div class="ft">Who owns the classifier?</div>
+      <div class="fb">Building the intake classifier requires product, support ops, and engineering to agree on issue taxonomy and routing rules. In a fast-moving company, this alignment is harder than the build itself. Expect 2 to 3 weeks of stakeholder negotiation before a line of code is written.</div>
+    </div>
+    <div class="fitem">
+      <div class="fl">Implementation friction 02</div>
+      <div class="ft">The metric change will look bad first</div>
+      <div class="fb">Switching to resolution rate will likely show a drop in the short term as the measurement gets honest. Leadership needs to be pre-sold on why a lower number is actually better. Without that, the change gets reversed before it has time to work.</div>
+    </div>
+    <div class="fitem">
+      <div class="fl">Implementation friction 03</div>
+      <div class="ft">Specialist capacity does not exist yet</div>
+      <div class="fb">The 2-hour SLA for urgent cases requires a pool of specialists who are available and not overloaded. If that capacity does not exist, the SLA is a promise the system cannot keep. Hiring or retraining needs to happen before the SLA is announced externally.</div>
+    </div>
+  </div>
+</section>
+
+<!-- GHOST 02 -->
+<section id="g2" class="ghost-section">
+  <div class="abar a"></div>
+  <div class="slabel reveal">02 // Brand and Acquisition</div>
+
+  <div class="gtop reveal">
+    <div class="gnum a">02</div>
+    <div>
+      <div class="gcat a">Ghost 02</div>
+      <h2 class="gh2">Rippling owns<br>"deel reviews" on Google</h2>
+      <p class="gtag">A competitor buys Deel's brand keyword and wins the consideration phase before a sales call happens. The ads make specific claims Deel's own documentation contradicts. Deel is not running the equivalent play back.</p>
+      <div class="badges">
+        <span class="badge a">Revenue Risk</span>
+        <span class="badge a">Brand Exposure</span>
+        <span class="badge a">Active Today</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="blocks reveal">
+    <div class="blk">
+      <div class="bh a">What I found</div>
+      <ul class="bl a">
+        <li>Google "deel reviews" in May 2026: first paid result is a Rippling comparison page. Headline: "Rippling vs Deel: See Why We're #1."</li>
+        <li>Google "rippling reviews": Deel appears nowhere in paid results. <strong>Deel is not running the same play back.</strong></li>
+        <li>Rippling's page claims Deel does not automatically sync across HR, payroll, IT and finance, and does not have 650+ integrations.</li>
+        <li>I checked Deel's own documentation: bidirectional Workday sync, verified NetSuite SuiteApp, SAP SuccessFactors integration, 68+ native integrations. Several of Rippling's claims appear outdated or false.</li>
+        <li>Deel sued Rippling for defamation and deceptive trade practices in April 2025. The litigation appears to be creating brand paralysis: Deel is not countering the ads, likely due to legal caution, even where claims are demonstrably inaccurate.</li>
+      </ul>
+      <div class="qt a">
+        "Automatically syncs across HR, payroll, IT, and finance: Rippling [tick] Deel [cross]"
+        <span class="qsrc">Rippling paid search ad, live on Google for "deel reviews," verified May 2026. Appears to contradict Deel's own product documentation.</span>
+      </div>
+    </div>
+    <div class="blk">
+      <div class="bh a">Why it is a real problem</div>
+      <ul class="bl a">
+        <li>The consideration phase is where deals are won before the first sales call. A buyer who searches "deel reviews," lands on a Rippling comparison page first, and sees a feature checklist where Deel has crosses, walks into the demo with a Rippling frame already set.</li>
+        <li><strong>Deel is losing brand consideration on the basis of claims its own documentation contradicts.</strong> The inaccuracy does not matter if buyers never see the rebuttal.</li>
+        <li>The lawsuit meant to protect Deel may be creating a brand paralysis that costs more in lost deals than it recovers in damages. Legal sensitivity is suppressing a marketing response that would be entirely legitimate.</li>
+      </ul>
+      <div class="qt a">
+        "I genuinely wish my company would switch back to Deel. We recently moved to Rippling and the very first day of withdrawing my salary has been the worst experience."
+        <span class="qsrc">Trustpilot, 2025 — the counter-narrative exists but buyers are not finding it first</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="blocks reveal">
+    <div class="blk dk">
+      <div class="bh a">Why it probably has not been fixed</div>
+      <ul class="bl">
+        <li>Paid search brand defence requires someone to notice the problem, size the impact in lost deals, and make the budget case across three teams simultaneously. That rarely happens without a single owner.</li>
+        <li>The litigation has made the brand team cautious. Even where Rippling's claims are factually wrong, the instinct is to let legal handle it rather than engage through marketing. Legal timelines and marketing timelines are completely different.</li>
+      </ul>
+      <div class="caveat" style="margin-top:16px">
+        <div class="caveat-label">Where I might be wrong</div>
+        <div class="caveat-body">Deel may be running defensive keyword campaigns in geos I did not check, or have a deliberate strategy of not engaging Rippling publicly as part of the litigation approach. If so, this is a known trade-off, not a ghost.</div>
+      </div>
+    </div>
+    <div class="blk dk">
+      <div class="bh a">Diagnosis: How I would find the real root cause</div>
+      <ol class="steps">
+        <li class="step"><span class="sn">01</span><div><div class="st">Audit the search landscape</div><div class="sb">Map every keyword Rippling is buying against Deel's brand. Quantify monthly search volume and estimated impression share lost. 30-minute SEMrush pull. This is the number that funds the fix.</div></div></li>
+        <li class="step"><span class="sn">02</span><div><div class="st">Fact-check Rippling's claims</div><div class="sb">Go through every checkbox on Rippling's comparison page against Deel's actual product docs. Flag false, outdated, and genuine gaps. This becomes the brief for legal and product simultaneously.</div></div></li>
+        <li class="step"><span class="sn">03</span><div><div class="st">Check with sales on closed-lost deals</div><div class="sb">Ask the last 20 closed-lost deals: did the buyer mention Rippling before the first call? Map whether the Rippling narrative shows up in deal notes. This quantifies the revenue cost.</div></div></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="blocks one reveal">
+    <div class="blk dkr">
+      <div class="bh a">The fix</div>
+      <div class="rm">
+        <div class="rms"><div class="rml a">Week 1</div><div class="rmt">Buy defensive positions</div><div class="rmd">"Deel reviews," "deel vs rippling," "deel pricing" should return a Deel result first. Table stakes. The media cost is small relative to the deal value being lost every week this is not running.</div></div>
+        <div class="rms"><div class="rml a">Week 2 to 3</div><div class="rmt">Build a real comparison page</div><div class="rmd">Not a checklist of green ticks mirroring Rippling's format. An honest, documented comparison that addresses specific claims with actual product evidence. Honesty is more credible than a point-by-point counter-attack.</div></div>
+        <div class="rms"><div class="rml a">Week 3 to 5</div><div class="rmt">Brief the sales team</div><div class="rmd">Every AE gets a one-pager: which Rippling claims are false, what the accurate Deel answer is, what to send a buyer who has already seen the Rippling page. This costs one content day.</div></div>
+        <div class="rms"><div class="rml a">Month 2</div><div class="rmt">Use the litigation constructively</div><div class="rmd">If Rippling's ads contain demonstrably false claims, that is relevant to existing proceedings. Brief legal not to slow the marketing response but to create a record that serves both simultaneously.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="friction reveal">
+    <div class="fitem">
+      <div class="fl">Implementation friction 01</div>
+      <div class="ft">Legal will want to review everything</div>
+      <div class="fb">Any public content that directly references Rippling by name will need legal sign-off given the active litigation. Build this into the timeline. A comparison page that takes 2 weeks to write may take 6 weeks to clear. Design the legal review into the process, not as an afterthought.</div>
+    </div>
+    <div class="fitem">
+      <div class="fl">Implementation friction 02</div>
+      <div class="ft">The honest comparison might reveal real gaps</div>
+      <div class="fb">Fact-checking Rippling's claims may reveal that some of them are actually true, or were true until recently. That changes the brief. The comparison page can only be "honest" if internal product owners confirm the accurate state of each feature before publication.</div>
+    </div>
+    <div class="fitem">
+      <div class="fl">Implementation friction 03</div>
+      <div class="ft">Budget ownership is unclear</div>
+      <div class="fb">Defensive keyword campaigns sit at the intersection of performance marketing and brand. Neither team typically owns "competitor brand defence" as a budget line. Someone needs to be given explicit ownership and budget before anything can be purchased.</div>
+    </div>
+  </div>
+</section>
+
+<!-- GHOST 03 -->
+<section id="g3" class="ghost-section">
+  <div class="abar b"></div>
+  <div class="slabel reveal">03 // AI and Operations</div>
+
+  <div class="gtop reveal">
+    <div class="gnum b">03</div>
+    <div>
+      <div class="gcat b">Ghost 03</div>
+      <h2 class="gh2">The AI bot optimised<br>for the wrong metric</h2>
+      <p class="gtag">Deel launched an AI support agent in September 2025 and announced 50% absorption rate as the headline success metric. Absorption rate measures deflection, not resolution. The hard cases still fall through — and now the metrics look better, making the problem harder to see.</p>
+      <div class="badges">
+        <span class="badge b">Ops Risk</span>
+        <span class="badge b">Metric Blindspot</span>
+        <span class="badge b">Post-Sept 2025</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="blocks reveal">
+    <div class="blk">
+      <div class="bh b">What I found</div>
+      <ul class="bl b">
+        <li>Deel launched its AI Support Agent in September 2025 and published a blog post announcing: <strong>"50% absorption rate, significantly higher than the industry average of 20 to 30%."</strong> The post also claimed the AI delivers "the same level of customer satisfaction as our human agents."</li>
+        <li>Reviews published after the launch contradict the satisfaction claim on complex issues. <strong>Capterra, February 2026:</strong> "Their AI support bot can be incredibly circular; getting a real person to look at your actual transaction instead of quoting a help article can take way too long."</li>
+        <li><strong>Product Hunt, verified:</strong> "Everything is guided through AI which is actually just a Google search." No ability to reach a human directly.</li>
+        <li><strong>Trustpilot:</strong> "I keep getting the exact same copy-pasted canned responses. Every time I open a chat an agent says I will merge this with your ticket and immediately closes the chat."</li>
+        <li>A Remotexa independent review found that users had to type "please connect me to a human agent" explicitly to escape the bot loop. Only then did the quality of help become genuinely good.</li>
+      </ul>
+    </div>
+    <div class="blk">
+      <div class="bh b">Why it is a real problem</div>
+      <ul class="bl b">
+        <li><strong>Absorption rate measures how many queries the bot closes, not whether they were actually resolved.</strong> A 50% absorption rate on simple queries that did not need sophisticated help is not the same as a 50% improvement in support quality.</li>
+        <li>The bot has introduced a new failure mode that did not exist before: customers with urgent, complex issues now get trapped in a bot loop before they can reach a human. This adds friction specifically where speed matters most.</li>
+        <li>Worse, the aggregate metrics now look better. Overall support volume to human agents is down. But the cases that drive churn — the ones that actually needed a human — are not being resolved faster. They are being delayed longer.</li>
+        <li>Industry data confirms this pattern: support tickets often increase after AI implementation because failed chatbot interactions create more complex problems for human agents. The 50% the bot absorbs are the 50% that did not need much help. The other 50% still need humans, and now arrive more frustrated.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="blocks reveal">
+    <div class="blk dk">
+      <div class="bh b">Why it probably has not been fixed</div>
+      <ul class="bl">
+        <li>The AI agent is a recent, public, celebrated launch. Internally it is being measured as a success because absorption rate is up. The failure signal — complex cases taking longer to resolve — is not being tracked separately.</li>
+        <li>The team that built the AI agent and the team that handles complex EOR escalations are almost certainly different teams. Neither has visibility into the other's outcomes.</li>
+        <li>Fixing this requires admitting that the headline metric used to announce the product is measuring the wrong thing. That is a politically difficult conversation internally, regardless of whether it is technically correct.</li>
+      </ul>
+      <div class="caveat" style="margin-top:16px">
+        <div class="caveat-label">Where I might be wrong</div>
+        <div class="caveat-body">Deel may already track resolution rate and CSAT separately by issue type internally and be working on this. The public reviews may lag behind internal improvements. If the AI classifier was already designed to route complex issues directly to humans, this ghost does not exist in the way I have described it.</div>
+      </div>
+    </div>
+    <div class="blk dk">
+      <div class="bh b">Diagnosis: How I would find the real root cause</div>
+      <ol class="steps">
+        <li class="step"><span class="sn">01</span><div><div class="st">Pull resolution rate, not absorption rate</div><div class="sb">What percentage of queries closed by the bot were actually resolved vs. reopened or escalated within 48 hours? That number tells you whether the bot is helping or just deferring.</div></div></li>
+        <li class="step"><span class="sn">02</span><div><div class="st">Measure CSAT by issue type post-bot</div><div class="sb">Separate CSAT for queries the bot handled vs. queries that required escalation. If the bot-handled CSAT is high and the escalation CSAT is low, the bot is succeeding at the easy cases and failing at the hard ones.</div></div></li>
+        <li class="step"><span class="sn">03</span><div><div class="st">Map the bot-to-human handoff</div><div class="sb">When a query escalates from bot to human, how much context does the human receive? If they start from zero, the bot is not just failing — it is actively making the human resolution worse by adding a frustration layer first.</div></div></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="blocks one reveal">
+    <div class="blk dkr">
+      <div class="bh b">The fix — three specific, implementable changes</div>
+      <div class="rm">
+        <div class="rms"><div class="rml b">Change 1 // Week 1</div><div class="rmt">Replace the headline metric</div><div class="rmd">Absorption rate out. "Resolved without human escalation within 24hrs" in. This is a data configuration change, not a product change. One week. It instantly changes what the entire bot is optimised for and surfaces the real failure rate.</div></div>
+        <div class="rms"><div class="rml b">Change 2 // Week 2 to 3</div><div class="rmt">Build a hard classifier before the bot</div><div class="rmd">Before the bot attempts to answer anything, classify the issue: simple query (bot handles), complex operational (route to human with 4hr SLA), urgent (skip queue entirely, named human in 2hrs). Decision tree on issue keywords and account tier. Not a bot rebuild. A routing layer on top of what already exists.</div></div>
+        <div class="rms"><div class="rml b">Change 3 // Week 3 to 4</div><div class="rmt">Pass full context on escalation</div><div class="rmd">When a query escalates from bot to human, the human receives: full conversation transcript, account tier, issue category, previous support history. The customer never repeats themselves. This is a CRM integration, not a bot rebuild. Three to four weeks.</div></div>
+        <div class="rms"><div class="rml b">Result</div><div class="rmt">Absorption drops. Resolution rises.</div><div class="rmd">Absorption rate probably falls from 50% to 30%. Resolution rate on handled cases rises. Cases that drive churn reach humans faster with full context. Net NPS impact is positive even though the headline AI metric looks worse. This is the correct trade-off.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="friction reveal">
+    <div class="fitem">
+      <div class="fl">Implementation friction 01</div>
+      <div class="ft">The metric change makes the bot "look worse"</div>
+      <div class="fb">Switching from absorption rate to resolution rate will show a lower number initially. The AI team will resist this because their product launch metric is being downgraded. Leadership needs to be pre-sold on why a lower number is actually better before the change is made, or it will be reversed.</div>
+    </div>
+    <div class="fitem">
+      <div class="fl">Implementation friction 02</div>
+      <div class="ft">The classifier needs ground truth data</div>
+      <div class="fb">Building the intake classifier requires labelled training data: past tickets manually categorised into simple, complex, and urgent. If that dataset does not exist, it needs to be created before the classifier can be built. Expect 2 to 3 weeks of data work before the engineering build starts.</div>
+    </div>
+    <div class="fitem">
+      <div class="fl">Implementation friction 03</div>
+      <div class="ft">Context-passing requires CRM cooperation</div>
+      <div class="fb">Passing full conversation context from bot to human requires the bot platform and the CRM to be integrated. If they are not already connected, this is an engineering project, not a configuration change. Timeline expands to 6 to 8 weeks and requires buy-in from two separate engineering teams.</div>
+    </div>
+  </div>
+</section>
+
+<!-- OTHER GHOSTS -->
+<section id="others">
+  <div class="slabel reveal">04 // Other possible ghosts</div>
+  <p class="reveal" style="font-size:14px;color:var(--m2);max-width:600px;margin-bottom:28px;font-weight:300;line-height:1.7">These surfaced during the research but I could not verify them fully from public data alone. Worth investigating internally.</p>
+  <div class="og-grid reveal">
+    <div class="og-item">
+      <div class="og-num">Possible ghost A</div>
+      <div class="og-title">The pricing page claim vs. real total cost</div>
+      <div class="og-body">Deel's pricing page says "no hidden fees." Independent analysts document a mandatory salary deposit, FX markups built into conversion rates, and country surcharges disclosed only during sales calls. Deel likely has legal cover for each line item individually. The ghost, if it exists, is whether buyers discovering the full cost post-signature churn at a measurably higher rate. That is a retention data question, not a pricing question.</div>
+    </div>
+    <div class="og-item">
+      <div class="og-num">Possible ghost B</div>
+      <div class="og-title">The misclassification narrative still alive</div>
+      <div class="og-body">A California state senator called for a labour investigation into Deel in 2023. Deel denied all allegations. The regulatory environment has shifted in Deel's favour under the 2025 DOL guidance. But Rippling's sales team and competitors continue to reference it in deal cycles. The ghost may be that the reputational residue of that episode is still being used against Deel in sales without a formal counter-narrative.</div>
+    </div>
+    <div class="og-item">
+      <div class="og-num">Possible ghost C</div>
+      <div class="og-title">Post-acquisition integration lag</div>
+      <div class="og-body">Deel has made 11 acquisitions to build its global infrastructure. Some reviews describe country modules operating in silos, forcing customers to maintain parallel systems. Rippling's comparison page exploits this specifically. I could not verify from public data whether this is a current product reality or a legacy from integrations now completed. Worth auditing the top 15 revenue countries specifically.</div>
+    </div>
+    <div class="og-item">
+      <div class="og-num">Possible ghost D</div>
+      <div class="og-title">The IPO readiness pressure on operations</div>
+      <div class="og-body">Deel is eyeing an IPO in 2026 at a $17B valuation. IPO readiness typically compresses operational bandwidth: legal, finance, and senior leadership focus on audit, compliance, and investor prep. This creates a window where internal operational problems get deprioritised in favour of looking clean externally. The ghosts that get hunted during IPO prep are financial, not operational. The operational ones accumulate quietly.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="slabel reveal">05 // Who did this</div>
+  <div class="about-grid reveal">
+    <div class="about-text">
+      <p>My name is <strong>Bhavani Susmitha Iragaraju</strong>. Three-plus years in CEO and Founder's Office roles across fintech and enterprise tech. I find unowned problems and fix them.</p>
+      <p>At <strong>Revolut</strong>: found an unscoped FinCrime ops problem nobody had formally touched, rebuilt the triage logic end to end, cut false positives from 57% to 12% across 7 business lines. No brief given. At <strong>CtrlS</strong>: repriced 100+ SKUs sitting unreviewed in a Rs 300 Cr+ business, reduced billing escalations 35% in 3 months. Promoted to Manager in 9 months. At <strong>IIFL Finance</strong>: sole Champion Performer in the management trainee cohort — an award that typically goes to experienced professionals, given to someone in their first role out of business school. Promoted to Manager in 10 months.</p>
+      <p>Since leaving Revolut I have shipped five live AI and ops tools: LLM API integration, RAG pipelines, multi-agent systems, Streamlit, Vercel. I spend time on problems I was not asked to solve. This audit is exactly that.</p>
+      <p style="font-size:12px;color:var(--m)">IIM Ahmedabad MBA &nbsp;&middot;&nbsp; IIT Patna B.Tech &nbsp;&middot;&nbsp; CAT 99.76%ile &nbsp;&middot;&nbsp; CFA L2 Candidate &nbsp;&middot;&nbsp; FRM P2 Candidate &nbsp;&middot;&nbsp; sush2328.github.io/portfolio</p>
+    </div>
+    <div>
+      <div class="metrics">
+        <div class="met"><div class="mv" style="font-size:18px">57% <span style="font-size:13px;color:var(--m)">to</span> 12%</div><div class="ml">False positives cut<br>Revolut FinCrime ops</div></div>
+        <div class="met"><div class="mv">100+</div><div class="ml">Unreviewed SKUs<br>repriced at CtrlS</div></div>
+        <div class="met"><div class="mv" style="font-size:18px">Sole winner</div><div class="ml">Champion Performer<br>MT cohort, IIFL Finance</div></div>
+        <div class="met"><div class="mv">2x</div><div class="ml">Fast-track promoted<br>at two companies</div></div>
+      </div>
+      <div class="blocks one" style="margin-top:1px">
+        <div class="blk dk">
+          <div class="bh" style="margin-bottom:12px">Audit summary</div>
+          <div class="drow"><span class="dk2">Ghosts verified</span><span class="dv">3</span></div>
+          <div class="drow"><span class="dk2">Evidence basis</span><span class="dv">100% public sources</span></div>
+          <div class="drow"><span class="dk2">Ghost 01</span><span class="dv r">Support triage gap</span></div>
+          <div class="drow"><span class="dk2">Ghost 02</span><span class="dv a">Brand ambush, live today</span></div>
+          <div class="drow"><span class="dk2">Ghost 03</span><span class="dv b">AI optimised for wrong metric</span></div>
+          <div class="drow"><span class="dk2">Other possible ghosts</span><span class="dv">4 flagged for investigation</span></div>
+          <div class="drow"><span class="dk2">CV with Sumanth</span><span class="dv g">Sent</span></div>
+          <div class="drow"><span class="dk2">Available to talk</span><span class="dv g">Immediately</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fn">Bhavani Susmitha Iragaraju</div>
+  <div class="fl2">
+    <a href="https://sush2328.github.io/portfolio" target="_blank">Portfolio</a>
+    <a href="https://linkedin.com/in/bhavanisusmitha" target="_blank">LinkedIn</a>
+    <a href="mailto:bhavanisusmitha1720@gmail.com">Email</a>
+  </div>
+  <div class="ff">Ghost Audit: Deel &nbsp;&middot;&nbsp; May 2026 &nbsp;&middot;&nbsp; All findings from publicly available information &nbsp;&middot;&nbsp; No confidential data accessed &nbsp;&middot;&nbsp; Built as proof of work for the Ghostbuster role at Deel.</div>
+</footer>
+
+<script>
+const o=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');o.unobserve(x.target)}})},{threshold:.07,rootMargin:'0px 0px -28px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>o.observe(el));
+</script>
+</body>
+</html>
